@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Box, ButtonBase } from '@mui/material';
+import { Box, ButtonBase, Typography } from '@mui/material';
 import { ReactComponent as DeleteIcon} from 'assets/icons/close.svg';
 import { ReactComponent as AddIcon } from 'assets/icons/add.svg';
 
-const hasPost = true
-
-const Preview = ({ post: { src, title, reference }, onClick, onDelete }) => {
+const Preview = ({ post, onClick, onDelete }) => {
+  const { src, title, reference } = post
   const [isShownDelete, setIsShownDelete] = useState(false);
+  const hasPost = !!title || !!src
 
   return (
     <Box
@@ -15,39 +15,63 @@ const Preview = ({ post: { src, title, reference }, onClick, onDelete }) => {
         backgroundColor: 'action.hover',
         position: 'relative',
         aspectRatio: '1/1',
-        backgroundImage: `url(${src})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        //opacity: reference ? 0.5 : 1,
       }}
       onMouseEnter={() => setIsShownDelete(true)}
       onMouseLeave={() => setIsShownDelete(false)}
-      onClick={onClick}
     >
-      {isShownDelete &&
-        <ButtonBase
-          onClick={onDelete}
-          sx={{
-            position: 'absolute', top: 0, right: 0, padding: '4px',
-            backgroundColor: 'background.default',
-            borderRadius: '0 0 0 10px',
-            '& svg': { width: 24, height: 24, color: 'action.active' }
-        }}>
-          <DeleteIcon />
-        </ButtonBase>}
       {hasPost ? (
-        <Box>
-          {!src && <Box sx={{ fontSize: '2rem', fontWeight: 700, opacity: .3 }}>{title}</Box>}
-        </Box>
+        <>
+          {!!src ? (
+           <Box
+             sx={{
+               width: '100%',
+               height: '100%',
+               backgroundImage: `url(${src})`,
+               backgroundSize: 'cover',
+               backgroundPosition: 'center',
+               opacity: reference ? 0.5 : 1,
+             }}
+             onClick={onClick}
+           />
+            ) : (
+            <Box
+              sx={{
+                width: '100%',
+                height: '100%',
+                overflow: 'hidden',
+                fontSize: '2rem',
+                fontWeight: 700,
+                opacity: .3,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                userSelect: 'none',
+                padding: '12px',
+            }}
+              onClick={onClick}
+            >
+              <Typography
+                noWrap
+                sx={{
+                  textAlign: 'center',
+                  width: '100%',
+                  fontSize: { xs: '1rem', md: '2rem'},
+                  fontWeight: 700,
+                  display: 'block',
+                }}
+              >
+                {title}
+              </Typography>
+            </Box>
+            )}
+        </>
       ) : (
         <ButtonBase
           sx={{
             width: '100%',
-            aspectRatio: '1/1', p: 3,
+            aspectRatio: '1/1',
+            p: 3,
             '& svg': {
               color: 'action.active',
             } }}
@@ -55,6 +79,18 @@ const Preview = ({ post: { src, title, reference }, onClick, onDelete }) => {
           <AddIcon />
         </ButtonBase>
       )}
+
+      {isShownDelete &&
+        <ButtonBase
+          onClick={() => onDelete(post)}
+          sx={{
+            position: 'absolute', top: 0, right: 0, padding: '4px',
+            backgroundColor: 'background.default',
+            borderRadius: '0 0 0 10px',
+            '& svg': { width: 24, height: 24, color: 'action.active' }
+          }}>
+          <DeleteIcon />
+        </ButtonBase>}
     </Box>
   )
 }

@@ -9,7 +9,7 @@ import UserInfo from 'components/User/UserInfo/UserInfo';
 
 const someText = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.'
 
-const posts = [
+const initialPosts = [
   { id: '1', title: 'Реф', description: someText, task: 'Реф', reference: true, src: 'https://images.pexels.com/photos/18794028/pexels-photo-18794028.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' },
   { id: '2', title: 'Новости', description: someText, task: 'Новости', reference: false, src: 'https://images.pexels.com/photos/19481069/pexels-photo-19481069.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' },
   { id: '3', title: 'Мотивация', description: '', task: 'Мотивация', reference: false, src: null },
@@ -31,7 +31,13 @@ const Root = styled(Box)({
 const Dashboard = () => {
   const [open, setOpen] = useState(false);
   const [pin, setPin] = useState(false);
+  const [posts, setPosts] = useState(initialPosts);
   const mobile = useMediaQuery((theme) => theme.breakpoints.down('md'));
+
+  const addPost = () => {
+    const newIndex = posts.length
+    setPosts([...posts, { id: newIndex + 1 }, { id: newIndex + 2 }, { id: newIndex + 3 }])
+  }
 
   return (
     <Root sx={{ paddingRight: pin ? '400px' : 'unset', overflow: 'auto', backgroundColor: 'background.default' }}>
@@ -43,10 +49,25 @@ const Dashboard = () => {
               <Preview
                 post={post}
                 onClick={() => setOpen(true)}
+                onDelete={() => setPosts(posts.filter(p => p.id !== post.id))}
               />
             </Grid>
           ))}
-          <Grid item xs={12}><ButtonBase sx={{ width: '100%', background: 'rgba(0,0,0,.1)', p: 3, '& svg': { stroke: 'rgba(0,0,0,.6)' } }}><AddIcon /></ButtonBase></Grid>
+          <Grid item xs={12}>
+            <ButtonBase
+              sx={{
+                width: '100%',
+                backgroundColor: 'action.hover',
+                p: 3,
+                '& svg': {
+                  color: 'action.active',
+                }
+              }}
+              onClick={addPost}
+            >
+              <AddIcon />
+            </ButtonBase>
+          </Grid>
         </Grid>
       </Container>
       {pin ? (
